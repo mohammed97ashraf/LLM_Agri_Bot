@@ -15,5 +15,6 @@ Gone are the days of one-size-fits-all chatbots that lack personalization and fa
 -  The Run Code by<br>
   `Python app.py`
 
+## [Read More at medium](https://medium.com/@mohammed97ashraf/creating-your-custom-chatbot-unleashing-the-power-of-openai-api-and-huggingface-for-text-and-voice-ccfbd39d6178)
 
 
