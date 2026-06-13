@@ -66,16 +66,37 @@ A personalized chatbot for agriculture queries that integrates OpenAI GPT for te
 | Problem | Solution |
 |---------|----------|
 | `ModuleNotFoundError: No module named 'flask'` | Run `pip install -r requirements.txt` |
-| `openai.error.AuthenticationError` | Check your `OPENAI_API_KEY` in `.env` – make sure it’s valid |
-| HuggingFace voice input not working | Ensure your `HUGGINGFACE_API_KEY` has the correct permissions and audio device is accessible |
-| `ImportError: cannot import name '...'` | Update dependencies: `pip install --upgrade -r requirements.txt` |
+| `No module named 'flask_cors'` | Run `pip install flask-cors` and add it to requirements.txt |
+| CORS errors in browser | Ensure Flask-CORS is installed and app is configured with `CORS(app)` |
+| API key errors | Verify `.env` file exists with correct keys |
+| Voice not working | Voice feature is under development; check back soon |
 
-## Security
-- **Never hardcode API keys** – always use environment variables or `.env` files.
-- The `.env` file is ignored by Git if you have a `.gitignore`. If not, add one immediately.
-
-## License
-[Add your license here]
+## Project Structure
+```
+LLM_Agri_Bot/
+├── app.py              # Main Flask application
+├── requirements.txt    # Python dependencies
+├── .env                # Environment variables (not committed)
+├── Sample_image/       # Screenshots and design assets
+├── README.md           # This file
+├── CONTRIBUTING.md     # Contribution guidelines
+└── CHANGELOG.md        # Version history
+```
 
 ## Contributing
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
+
+## License
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+- OpenAI for language models
+- HuggingFace for voice processing models
+- Flask community
+
+## Future Improvements
+- Complete voice input feature with real STT model integration
+- Add WebSocket support for real-time streaming
+- Implement user authentication
+- Expand agriculture knowledge base with retrieval-augmented generation (RAG)
+- Add support for multiple languages
