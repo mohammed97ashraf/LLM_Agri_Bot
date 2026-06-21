@@ -1,0 +1,3 @@
+# Render Build Configuration
+build: pip install -r requirements.txt
+start: gunicorn "app:create_app()" --config gunicorn.conf.py --factory

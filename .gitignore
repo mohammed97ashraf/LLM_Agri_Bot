@@ -1,14 +1,20 @@
 # Environment variables
 .env
+.env.local
+.env.production
 
 # Python cache
 __pycache__/
 *.pyc
 *.pyo
 
-# Virtual environment
+# Virtual environment (uv uses .venv)
 venv/
 env/
+.venv/
+
+# uv lock file (regenerated from pyproject.toml)
+uv.lock
 
 # IDE files
 .vscode/
@@ -18,5 +24,12 @@ env/
 .DS_Store
 Thumbs.db
 
-# Sample images (optional – keep if you want to track them)
-# Sample_image/
+# Uploads & generated audio (user-generated)
+uploads/
+app/static/audio/*.wav
+app/static/audio/*.mp3
+
+# Build artifacts
+dist/
+build/
+*.egg-info/

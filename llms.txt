@@ -1,0 +1,41 @@
+# Krishi Sahayak — AI Agriculture Assistant
+
+> An AI-powered agriculture advisory chatbot for Indian farmers. Built with Flask, Groq SDK, and Redis.
+
+## Summary
+
+Krishi Sahayak (meaning "Agriculture Helper") is a multilingual AI chatbot designed to assist Indian farmers with agricultural queries. It provides expert advice on crop cultivation, pest control, soil management, weather patterns, government schemes, and more. The bot supports text, voice input/output, and image analysis (crop disease identification via vision model).
+
+## Features
+
+- AI-powered agricultural advisory using Groq LLM (`openai/gpt-oss-120b`)
+- Image-based crop disease diagnosis using Llama 4 Scout vision model (`meta-llama/llama-4-scout-17b-16e-instruct`)
+- Voice input via Groq Whisper (`whisper-large-v3-turbo`)
+- Voice output via Groq Orpheus TTS (`canopylabs/orpheus-v1-english`)
+- Conversation memory with Redis (with in-memory fallback)
+- Prompt caching for fast, cost-effective responses (50% discount on cached tokens)
+- Dark/light theme with glassmorphism UI
+- Multilingual support (English, Hindi, Hinglish)
+
+## Technical Stack
+
+- Backend: Python 3.11+, Flask, Groq SDK, Redis
+- Frontend: HTML5, CSS3 (Glassmorphism), jQuery, Bootstrap Icons
+- LLM Models: openai/gpt-oss-120b (text), meta-llama/llama-4-scout-17b-16e-instruct (vision)
+- Speech: Groq Whisper (STT), Groq Orpheus (TTS)
+- Deploy: Render, Docker, Gunicorn
+
+## API Endpoints
+
+- `POST /chat` — Send text message, returns AI response with optional voice audio
+- `POST /chat` — Send image + text (multipart), returns vision-based analysis
+- `POST /chat` — Send audio blob (multipart), returns transcription and AI response
+- `POST /chat/clear` — Clear conversation history for current session
+- `GET /health` — Health check endpoint
+
+## Contact
+
+- Author: Mohammed Ashraf
+- GitHub: https://github.com/mohammed97ashraf/LLM_Agri_Bot
+- LinkedIn: https://www.linkedin.com/in/mohammed97ashraf
+- License: MIT

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishi Sahayak - AI Agriculture Assistant for Indian Farmers</title>
+    <meta name="description" content="AI-powered agriculture assistant for Indian farmers. Get expert advice on crops, pest control, soil health, weather, government schemes, and farming practices. Supports voice, text, and image analysis.">
+    <meta name="keywords" content="agriculture, farming, India, crops, pest control, soil health, AI assistant, chatbot, Kharif, Rabi, Zaid, wheat, rice, paddy, PM-KISAN, fertilizers, irrigation">
+    <meta name="author" content="Mohammed Ashraf">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0a1628">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://llm-agri-bot.onrender.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://llm-agri-bot.onrender.com/">
+    <meta property="og:title" content="Krishi Sahayak - AI Agriculture Assistant for Indian Farmers">
+    <meta property="og:description" content="Get expert AI-powered advice on crops, pest control, soil health, weather, and government schemes. Supports voice, text, and image-based crop disease diagnosis.">
+    <meta property="og:image" content="https://llm-agri-bot.onrender.com/static/images/og-image.png">
+    <meta property="og:site_name" content="Krishi Sahayak">
+    <meta property="og:locale" content="en_IN">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://llm-agri-bot.onrender.com/">
+    <meta name="twitter:title" content="Krishi Sahayak - AI Agriculture Assistant">
+    <meta name="twitter:description" content="AI-powered agriculture assistant for Indian farmers. Voice, text, and image-based crop advisory.">
+    <meta name="twitter:image" content="https://llm-agri-bot.onrender.com/static/images/og-image.png">
+    <meta name="twitter:creator" content="@mohammed97ashraf">
+
+    <!-- AI Crawlers -->
+    <meta name="llms-txt" content="/llms.txt">
+    <meta name="ai-content-declaration" content="human-reviewed">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Krishi Sahayak",
+        "alternateName": "AI Agriculture Assistant",
+        "url": "https://llm-agri-bot.onrender.com",
+        "description": "AI-powered agriculture assistant for Indian farmers. Get expert advice on crops, pest control, soil health, weather, and government schemes.",
+        "applicationCategory": "AgricultureApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "INR"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "Mohammed Ashraf",
+            "url": "https://www.linkedin.com/in/mohammed97ashraf",
+            "sameAs": [
+                "https://github.com/mohammed97ashraf",
+                "https://www.linkedin.com/in/mohammed97ashraf"
+            ]
+        },
+        "inLanguage": ["en", "hi"],
+        "featureList": [
+            "AI Crop Disease Diagnosis",
+            "Voice Input & Output",
+            "Agricultural Advisory",
+            "Government Scheme Information",
+            "Image Analysis",
+            "Multilingual Support"
+        ],
+        "screenshot": "https://llm-agri-bot.onrender.com/static/images/og-image.png"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is Krishi Sahayak?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Krishi Sahayak is an AI-powered agriculture assistant that helps Indian farmers with crop advice, pest control, soil health, weather information, and government schemes."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can Krishi Sahayak diagnose crop diseases from photos?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, you can upload a photo of your crops and Krishi Sahayak will analyze it using AI vision to identify diseases, pests, and nutrient deficiencies."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is Krishi Sahayak free to use?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, Krishi Sahayak is completely free to use. It provides AI-powered agricultural advisory at no cost."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="alternate" hreflang="en" href="https://krishisahayak.vercel.app/">
+    <link rel="alternate" hreflang="hi" href="https://krishisahayak.vercel.app/?lang=hi">
+    <link rel="author" href="https://github.com/mohammed97ashraf">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+</head>
+<body>
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a class="brand" href="/">
+                <span class="brand-icon"><i class="bi bi-flower2"></i></span>
+                <span>Krishi Sahayak</span>
+            </a>
+            <div class="nav-actions">
+                <button class="nav-btn" id="clearBtn" title="Clear conversation">
+                    <i class="bi bi-trash3"></i><span class="btn-label">New Chat</span>
+                </button>
+                <button class="nav-btn" id="themeToggle" title="Toggle theme">
+                    <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== MAIN ========== -->
+    <main class="main">
+        <div class="chat-card">
+
+            <!-- Header -->
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="avatar"><i class="bi bi-flower2"></i></div>
+                    <div>
+                        <h5>Krishi Sahayak</h5>
+                        <span class="status"><i class="bi bi-circle-fill"></i> Online</span>
+                    </div>
+                </div>
+                <span class="date" id="dateDisplay"></span>
+            </div>
+
+            <!-- Messages -->
+            <div class="messages" id="chatMessages"></div>
+
+            <!-- Typing -->
+            <div class="typing" id="typingIndicator">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="typing-label">Thinking...</span>
+            </div>
+
+            <!-- Image Preview -->
+            <div class="image-preview" id="imagePreview">
+                <img id="previewImg" src="" alt="Preview">
+                <button class="remove-image" id="removeImage" title="Remove image"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <!-- Input -->
+            <div class="input-bar">
+                <button class="icon-btn" id="imageBtn" title="Upload image">
+                    <i class="bi bi-image"></i>
+                </button>
+                <input type="file" id="imageInput" accept="image/*" class="d-none" title="Upload image" aria-label="Upload image">
+                <button class="icon-btn mic" id="voiceBtn" title="Record voice">
+                    <i class="bi bi-mic"></i>
+                </button>
+                <form id="chatForm" class="input-row" autocomplete="off">
+                    <input type="text" class="chat-input" id="userInput"
+                           placeholder="Ask about crops, pests, soil, or send a photo..." aria-label="Message">
+                    <button type="submit" class="send-btn" id="sendBtn" title="Send message">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Audio Player -->
+    <audio id="audioPlayer" class="d-none"></audio>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Made with <i class="bi bi-heart-fill footer-heart"></i> by
+            <a href="https://www.linkedin.com/in/mohammed97ashraf" target="_blank" rel="noopener">Mohammed Ashraf</a>
+            &middot;
+            <a href="https://github.com/mohammed97ashraf" target="_blank" rel="noopener" title="GitHub"><i class="bi bi-github"></i></a>
+            <a href="https://www.linkedin.com/in/mohammed97ashraf" target="_blank" rel="noopener" class="ms-1" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+        </p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

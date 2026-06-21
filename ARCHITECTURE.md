@@ -1,118 +1,136 @@
-# Architecture of LLM Agri Bot
+# Architecture — Krishi Sahayak v2.0
 
 ## Overview
 
-LLM Agri Bot is a full‑stack chatbot tailored for agriculture queries. It combines a Flask backend with OpenAI’s GPT models for text understanding and HuggingFace Transformers for voice processing. The frontend is a simple HTML/CSS/JS interface that supports both text and voice input.
+Krishi Sahayak is a full-stack AI agriculture assistant. Flask backend + Groq SDK for all AI services, Redis for session memory, glassmorphism frontend. Class-based services following SOLID principles.
 
-## High‑Level Architecture
+## Architecture Diagram
 
 ```
-+-------------------+      HTTP/WebSocket      +----------------------+
-|   Frontend        |  ------------------->   |   Flask Backend      |
-| (HTML/CSS/JS)     |  <-------------------   |   (Python)           |
-| - text input      |                          | - /chat endpoint     |
-| - voice recording  |                          | - /voice endpoint    |
-+-------------------+                          +----------------------+
-                                                       |
-                                                       v
-                                              +----------------------+
-                                              | OpenAI API           |
-                                              | (GPT-3.5/4)          |
-                                              +----------------------+
-                                                       ^
-                                                       |
-                                              +----------------------+
-                                              | HuggingFace          |
-                                              | (Wav2Vec2 STT)       |
-                                              +----------------------+
+Browser (jQuery + Glassmorphism CSS)
+    │
+    ├── GET /             → index.html
+    ├── POST /chat        → text query
+    ├── POST /chat        → image + text (multipart)
+    ├── POST /chat        → audio blob (multipart)
+    ├── POST /chat/clear  → clear session
+    └── GET /health       → health check
+    │
+Flask (WSGI)
+    │
+    ├── main_bp          → index, robots.txt, sitemap.xml, llms.txt
+    ├── chat_bp          → /chat, /chat/clear, /health
+    │
+    └── Services (attached to app)
+         ├── LLMService       → Groq SDK (openai/gpt-oss-120b)
+         ├── MemoryService    → Redis + in-memory fallback
+         ├── STTService       → Groq Whisper (whisper-large-v3-turbo)
+         ├── TTSService       → Groq Orpheus (canopylabs/orpheus-v1-english)
+         └── PromptManager    → XML + CoT system prompt
 ```
 
-## Component Breakdown
+## Components
 
-### 1. Frontend (HTML/CSS/JS)
-- **Location**: `templates/` and `static/` directories.
-- **Functionality**:
-  - Renders a chat interface with a text input box and a microphone button.
-  - Sends text messages to the backend via HTTP POST to `/chat`.
-  - Captures audio from the user’s microphone using the browser’s `MediaRecorder` API, then sends the audio blob to `/voice`.
-- **Key files**:
-  - `templates/index.html` – main page layout.
-  - `static/script.js` – handles AJAX calls and voice recording logic.
-  - `static/style.css` – styling for the chat UI.
+### 1. Frontend (`app/templates/` + `app/static/`)
 
-### 2. Backend (Flask)
-- **Location**: `app.py` (or main application file).
-- **Endpoints**:
-  - `GET /` – serves the frontend page.
-  - `POST /chat` – accepts JSON with `{"message": "..."}`, calls OpenAI API, and returns the assistant’s reply.
-  - `POST /voice` – accepts an audio file, transcribes it using HuggingFace’s Wav2Vec2, then forwards the transcribed text to the OpenAI API for a response.
-- **Configuration**:
-  - OpenAI API key and HuggingFace token are loaded from environment variables (`OPENAI_API_KEY`, `HUGGINGFACE_TOKEN`).
-- **Dependencies**:
-  - Flask
-  - openai
-  - transformers (HuggingFace)
-  - torch (for model inference)
-  - soundfile / librosa (for audio processing)
+| File | Purpose |
+|------|---------|
+| `templates/index.html` | Main template with SEO, JSON-LD, OG tags |
+| `static/css/style.css` | Glassmorphism UI, dark/light theme |
+| `static/js/chat.js` | Chat logic, image upload, voice recording |
 
-### 3. Text Model (OpenAI GPT-3.5/4)
-- **Usage**:
-  - The backend constructs a prompt with the user’s message and optional context (e.g., “You are an agriculture expert.”).
-  - Sends the prompt to OpenAI’s Chat Completion API.
-  - Returns the generated response.
-- **Configuration**:
-  - Model selection (gpt-3.5-turbo or gpt-4) can be set via environment variable `GPT_MODEL`.
-  - Temperature, max tokens, etc., are configurable in `app.py`.
+Features: Text input, image upload with preview, voice recording, theme toggle, cache badge display.
 
-### 4. Voice Processing (HuggingFace Wav2Vec2)
-- **Model**: `facebook/wav2vec2-base-960h` (or a fine‑tuned variant for agricultural domain).
-- **Pipeline**:
-  - Receive audio blob (WAV format) from frontend.
-  - Convert to mono, 16kHz sample rate.
-  - Run through the Wav2Vec2 model to obtain transcription.
-  - Return the text to the user or feed it into the OpenAI pipeline.
-- **Caching**: The model is loaded once at startup and reused for all requests to reduce latency.
+### 2. Backend (`app/`)
 
-## Data Flow
+**App Factory** (`app/__init__.py`):
+- `create_app()` → Flask factory with config, blueprints, services
 
-1. **Text Chat Flow**:
-   - User types a question → frontend sends `POST /chat` with JSON body.
-   - Backend receives message → sends to OpenAI API → receives response → returns JSON `{"reply": "..."}`.
-   - Frontend displays the reply in the chat window.
+**Routes** (`app/routes/`):
 
-2. **Voice Chat Flow**:
-   - User clicks microphone → frontend records audio → sends blob as `POST /voice` (multipart/form-data).
-   - Backend receives audio → runs HuggingFace ASR → gets transcription.
-   - Backend sends transcription to OpenAI API → gets reply.
-   - Backend returns JSON `{"transcript": "...", "reply": "..."}`.
-   - Frontend displays both the transcribed text and the assistant’s reply.
+| Blueprint | Endpoints | Purpose |
+|-----------|-----------|---------|
+| `main_bp` | `GET /`, `/robots.txt`, `/sitemap.xml`, `/llms.txt` | Pages + SEO |
+| `chat_bp` | `POST /chat`, `POST /chat/clear`, `GET /health` | Chat API |
 
-## Security & Configuration
+**Services** (`app/services/`):
 
-- All API keys are stored as environment variables. Never hardcode secrets.
-- Input validation: Backend sanitizes user messages to prevent injection attacks.
-- Rate limiting: Consider adding Flask‑Limiter to prevent abuse.
-- Logging: All requests and errors are logged to `app.log` for debugging.
+| Service | Responsibility |
+|---------|---------------|
+| `LLMService` | Groq SDK calls, vision model, cache tracking, markdown stripping |
+| `MemoryService` | Redis conversation history with in-memory fallback |
+| `STTService` | Groq Whisper audio transcription |
+| `TTSService` | Groq Orpheus text-to-speech |
+| `PromptManager` | XML + CoT system prompt, message building |
 
-## Deployment Considerations
+### 3. AI Models (all Groq)
 
-- **Local**: Run with `python app.py` after setting environment variables.
-- **Production**: Use a WSGI server (Gunicorn) behind Nginx. Consider containerization with Docker.
-- **Scaling**: If voice processing becomes a bottleneck, offload it to a separate microservice or use a cloud ASR service.
+| Model | Use | Endpoint |
+|-------|-----|----------|
+| `openai/gpt-oss-120b` | Text chat | Chat Completions |
+| `meta-llama/llama-4-scout-17b-16e-instruct` | Image analysis | Chat Completions (multimodal) |
+| `whisper-large-v3-turbo` | Speech-to-text | Audio Transcriptions |
+| `canopylabs/orpheus-v1-english` | Text-to-speech | Audio Speech |
 
-## Future Improvements
+### 4. Memory (Redis)
 
-- Add a memory layer (e.g., Redis) to maintain conversation context across sessions.
-- Integrate a vector database (Pinecone, FAISS) for retrieval‑augmented generation (RAG) using agricultural documents.
-- Support multiple languages via HuggingFace multilingual models.
-- Implement a feedback loop to improve responses over time.
+- Session-scoped conversation history stored as JSON lists in Redis.
+- Automatic TTL expiry (configurable, default 1 hour).
+- **In-memory fallback** when Redis is unavailable — conversations persist within the same process but are lost on restart.
 
-## References
+## Data Flows
 
-- [OpenAI API documentation](https://platform.openai.com/docs)
-- [HuggingFace Wav2Vec2](https://huggingface.co/facebook/wav2vec2-base-960h)
-- [Flask documentation](https://flask.palletsprojects.com/)
+### Text Chat
+```
+User types message → POST /chat (text)
+  → MemoryService.get_conversation_history()
+  → LLMService.generate(user_query, history)
+    → build_messages(system_prompt + history + query)
+    → Groq API call (text model)
+    → strip_markdown(response)
+  → MemoryService.add_to_conversation(user + assistant)
+  → TTSService.synthesize(response)
+  → Return JSON { text, voice, cache }
+```
 
----
+### Image Analysis
+```
+User uploads image → POST /chat (image + text)
+  → Read + base64-encode image
+  → LLMService.generate_with_image(query, image_b64)
+    → build_messages with image_url (multimodal)
+    → Groq API call (vision model)
+    → strip_markdown(response)
+  → MemoryService.add_to_conversation
+  → TTSService.synthesize
+  → Return JSON { text, voice, cache }
+```
 
-*This document was generated to help new contributors understand the system architecture. For setup instructions, see [README.md](README.md).*
+### Voice Chat
+```
+User records audio → POST /chat (audio)
+  → Save audio file
+  → STTService.transcribe(file)
+    → Groq Whisper API
+  → _process_text_query(transcription)
+  → Delete temp audio file
+  → Return JSON { text, voice, transcription }
+```
+
+## Prompt Caching
+
+Groq automatically caches static prompt prefixes across requests:
+- System prompt (~500 tokens) → cached from request 1
+- Conversation history → prefix grows but cached on subsequent requests
+- Only the new user query is processed fresh
+- 50% cost discount on cached tokens
+- Cache stats returned in every response
+
+## Deployment
+
+| Method | Config |
+|--------|--------|
+| Local dev | `uv run python LLM_Agri_Bot/run.py` |
+| Render | `render.yaml` + `Dockerfile` |
+| Docker | `docker build . && docker run -p 10000:10000` |
+| Production | Gunicorn via `gunicorn.conf.py` |

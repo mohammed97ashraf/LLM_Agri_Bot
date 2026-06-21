@@ -1,0 +1,1 @@
+"""Route blueprints for LLM Agri Bot."""
